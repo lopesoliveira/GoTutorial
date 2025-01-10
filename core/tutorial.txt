@@ -1,0 +1,173 @@
+1)
+/**********************************************************************************************************/
+Run from the command line
+>go run core/main.go
+/**********************************************************************************************************/
+
+2)
+/**********************************************************************************************************/
+const myConst
+var myVar
+
+bool
+float32 float64
+int int16 int32 int64
+rune
+string
+uint uint8 uint16 uint32
+string
+
+len(string) -> Number of bytes of the string
+utf8.RuneCountInString(string) -> Number of characters in a string
+
+3 ways of declaring variables:
+1) var varName type
+var myInt int = 1
+2) if type can be inferred only need: var varName
+var myInt = 1
+3) if type can be inferred you can even omit the var keyword: varName
+myInt := 1
+
+const myConst string = "const value"
+fmt.Println(myConst)
+
+const pi float32 = 3.1415
+fmt.PrintLn(pi)
+/**********************************************************************************************************/
+
+3) Functions and error
+/**********************************************************************************************************/
+
+func main() {
+	printMe()
+	value := "Ola Joao"
+	printMeValue(value)
+	var result = intDivision(4, 2)
+	fmt.Println(result)
+	var numerator = 11
+	//var denominator = 2
+	var denominator = 0
+	//var division, remainder = intDivisionAndRemainder(numerator, denominator)
+	//fmt.Printf("The result of the integer division is %v, with remainder %v \n", division, remainder)
+
+	var divRes, divRemainder, err = intDivisionErrorTolerant(numerator, denominator)
+
+	/*
+		if err != nil {
+			fmt.Printf(err.Error())
+		} else if divRemainder == 0 {
+			fmt.Printf("The result of the integer division is %v \n", divRes)
+		} else {
+			fmt.Printf("The result of the integer division is %v, with remainder %v \n", divRes, divRemainder)
+		}
+	*/
+
+	switch { //In Go switch does not need keyword break;
+	case err != nil:
+		fmt.Printf(err.Error())
+	case divRemainder == 0:
+		fmt.Printf("The result of the integer division is %v \n", divRes)
+	default:
+		fmt.Printf("The result of the integer division is %v, with remainder %v \n", divRes, divRemainder)
+	}
+
+	//Go also has conditional switch
+	//Suppose we want to print out additional values to the console depending on the value of the remainder
+
+	switch divRemainder {
+	case 0:
+		fmt.Printf("The division was exact.")
+	case 1, 2:
+		fmt.Printf("The division was close.")
+	default:
+		fmt.Println("The division was not close.")
+	}
+
+}
+
+func printMe() {
+	fmt.Println("Hello World")
+}
+
+func printMeValue(printValue string) {
+	fmt.Println(printValue)
+}
+
+func intDivision(numerator int, denominator int) int {
+	return numerator / denominator
+}
+func intDivisionAndRemainder(numerator int, denominator int) (int, int) {
+	var division = numerator / denominator
+	var remainder = numerator % denominator
+	return division, remainder
+}
+
+func intDivisionErrorTolerant(numerator int, denominator int) (int, int, error) {
+	var err error
+	if denominator == 0 {
+		err = errors.New("cannot divide by zero\n")
+		return 0, 0, err
+	}
+	var result int = numerator / denominator
+	var remainder int = numerator % denominator
+	return result, remainder, err
+}
+
+//trying pass 0 as denominator
+
+
+/**********************************************************************************************************/
+
+4) Pointers
+/**********************************************************************************************************/
+
+Snippet1
+...
+var p *int32 = new(int32)
+var i int32 = 2
+*p = i
+fmt.Printf("The value of p is %v\n", *p)
+fmt.Printf("The value of i is %v\n", i)
+...
+
+Snippet2
+...
+var p *int32 = new(int32)
+var i int32 = 2
+p = &i
+fmt.Printf("The value of p is %v\n", *p)
+fmt.Printf("The value of i is %v\n", i)
+...
+
+Is there any difference between Snippet1 and Snippet2 ?
+
+
+GitHub Copilot
+Yes, there is a difference between Snippet1 and Snippet2 in terms of what the pointer p points to and how the memory is managed.
+
+Snippet1
+Explanation:
+var p *int32 = new(int32): This creates a new int32 variable on the heap and assigns its address to p.
+var i int32 = 2: This creates a new int32 variable i with the value 2.
+*p = i: This assigns the value of i to the memory location pointed to by p.
+fmt.Printf("The value of p is %v\n", *p): This prints the value stored at the memory location pointed to by p, which is 2.
+fmt.Printf("The value of i is %v\n", i): This prints the value of i, which is 2.
+In Snippet1, p points to a separate memory location allocated by new(int32). The value of i is copied to this new memory location.
+
+Snippet2
+Explanation:
+var p *int32 = new(int32): This creates a new int32 variable on the heap and assigns its address to p.
+var i int32 = 2: This creates a new int32 variable i with the value 2.
+p = &i: This changes p to point to the address of i.
+fmt.Printf("The value of p is %v\n", *p): This prints the value stored at the memory location pointed to by p, which is 2.
+fmt.Printf("The value of i is %v\n", i): This prints the value of i, which is 2.
+In Snippet2, p is reassigned to point directly to the variable i. Therefore, p and i refer to the same memory location.
+
+Key Differences:
+In Snippet1, p initially points to a newly allocated int32 variable on the heap. The value of i is then copied to this new memory location. p and i are independent of each other.
+In Snippet2, p is reassigned to point directly to the variable i. Therefore, p and i refer to the same memory location. Any changes to *p would directly affect i and vice versa.
+Summary:
+Snippet1: p points to a separate memory location from i, and the value of i is copied to the location pointed to by p.
+Snippet2: p points directly to the memory location of i, so any changes to *p would directly affect i and vice versa.
+
+/**********************************************************************************************************/
